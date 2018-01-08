@@ -1,0 +1,59 @@
+{
+  "intents": [
+    {
+      "intent": "AMAZON.CancelIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "slots": [
+        {
+          "name": "IPNumber",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "first",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "second",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "third",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "forth",
+          "type": "AMAZON.NUMBER"
+        }
+      ],
+      "intent": "IPAddress"
+    },
+    {
+      "slots": [
+        {
+          "name": "ChannelNumber",
+          "type": "AMAZON.FOUR_DIGIT_NUMBER"
+        },
+        {
+          "name": "Time",
+          "type": "AMAZON.TIME"
+        },
+        {
+          "name": "Duration",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "Date",
+          "type": "AMAZON.DATE"
+        }
+      ],
+      "intent": "Record"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+IPAddress My IP address is {IPNumber}
+IPAddress My IP address is {first} dot {second} dot {third} dot {forth}
+IPAddress My internet protocol address is {first} dot {second} dot {third} dot {forth}
+IPAddress My internet protocol address is {IPNumber}
+Record Record channel {ChannelNumber} on {Date} at {Time} for {Duration} minutes
+Record On {Date} at {Time} record channel {ChannelNumber} for {Duration} minutes
