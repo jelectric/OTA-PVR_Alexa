@@ -67,7 +67,7 @@ def handle_session_end_request():
     speech_output = "Thank you for trying the Over the Air TV Recorder. " \
                     "Have a nice day! "
     # Setting this to true ends the session and exits the skill.
-    should_end_session = True
+    should_end_session = False
     return build_response({}, build_speechlet_response(
         card_title, speech_output, None, should_end_session))
 
@@ -90,7 +90,8 @@ def set_color_in_session(intent, session):
     timeRecord = intent['slots']['Time']['value']
     dateRecord = intent['slots']['Date']['value']
     
-    HOST, PORT = "", 9999
+    HOST = get_IP_address_from_session(intent,session)
+    PORT = 9998
     data = ''.join([channelNum,'\n',timeRecord,'\n',dateRecord,'\n',duration,'\n'])
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         # Connect to server and send data
@@ -125,32 +126,21 @@ def set_IP_address(intent, session):
     should_end_session = False
     reprompt_text = None
     
-    session['attributes']['first'] = intent['slots']['first']['value']
-    session['attributes']['second'] = intent['slots']['second']['value']
-    session['attributes']['third'] = intent['slots']['third']['value']
-    session['attributes']['forth'] = intent['slots']['forth']['value']
     session_attributes = {'first' : intent['slots']['first']['value'], 'second' : intent['slots']['second']['value'], 'third' : intent['slots']['third']['value'], 'forth' : intent['slots']['forth']['value']}
     speech_output = "Your IP Address has been set"
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
     
 def get_IP_address_from_session(intent, session):
-    #session_attributes = {}
-    reprompt_text = None
     
-    #first = session.attributes
-    
-    IP_address = ''.join(first,'.',second,'.',third,'.',forth)
-    print("IP Address: " + IP_address)
+    if session.get('attributes',{}) and 'first' in session.get('attributes',{}):
+        IP_address = ''.join((session['attributes']['first'],'.',
+            session['attributes']['second'],'.',session['attributes']['third'],'.',
+            session['attributes']['forth']))
+    else:
+        IP_address = 'unknown'
 
-    speech_output = "Your IP Address is " + IP_address
-    should_end_session = True
-
-    # Setting reprompt_text to None signifies that we do not want to reprompt
-    # the user. If the user does not respond or says something that is not
-    # understood, the session will end.
-    return build_response(session_attributes, build_speechlet_response(
-        intent['name'], speech_output, reprompt_text, should_end_session))
+    return IP_address
 
 
 # --------------- Events ------------------
@@ -181,6 +171,13 @@ def on_intent(intent_request, session):
 
     intent = intent_request['intent']
     intent_name = intent_request['intent']['name']
+    
+    #for k, v in session.items():
+        #print(k, v)
+    #d_state = intent_request['request']['dialogState']
+    #print('Dialog State: ' + d_state)
+    #print(intent_request['dialogState'])
+
 
     # Dispatch to your skill's intent handlers
     if intent_name == "Record":
