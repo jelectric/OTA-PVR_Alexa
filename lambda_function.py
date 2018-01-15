@@ -40,6 +40,17 @@ def build_response(session_attributes, speechlet_response):
         'response': speechlet_response
     }
 
+def buildSpeechletResponseWithDirectiveNoIntent():
+    print("in buildSpeechletResponseWithDirectiveNoIntent");
+    return {
+      "outputSpeech" : None,
+      "card" : None,
+      "directives" : [ {
+        "type" : "Dialog.Delegate"
+      } ],
+      "reprompt" : None,
+      "shouldEndSession" : False
+    }
 
 # --------------- Functions that control the skill's behavior ------------------
 
@@ -82,7 +93,10 @@ def set_color_in_session(intent, session):
     """
 
     card_title = intent['name']
-    session_attributes = {}
+    if 'attributes' in session:
+        session_attributes = session['attributes']
+    else:
+        session_attributes = {}
     should_end_session = False
     
     channelNum = intent['slots']['ChannelNumber']['value']
@@ -122,7 +136,10 @@ def set_color_in_session(intent, session):
 
 def set_IP_address(intent, session):
     card_title = intent['name']
-    session_attributes = {}
+    if 'attributes' in session:
+        session_attributes = session['attributes']
+    else:
+        session_attributes = {}
     should_end_session = False
     reprompt_text = None
     
@@ -139,6 +156,8 @@ def get_IP_address_from_session(intent, session):
             session['attributes']['forth']))
     else:
         IP_address = 'unknown'
+    
+    print(''.join(IP_address))
 
     return IP_address
 
@@ -164,6 +183,10 @@ def on_launch(launch_request, session):
 
 
 def on_intent(intent_request, session):
+    if 'attributes' in session:
+        session_attributes = session['attributes']
+    else:
+        session_attributes = {}
     """ Called when the user specifies an intent for this skill """
 
     print("on_intent requestId=" + intent_request['requestId'] +
@@ -172,11 +195,11 @@ def on_intent(intent_request, session):
     intent = intent_request['intent']
     intent_name = intent_request['intent']['name']
     
-    #for k, v in session.items():
-        #print(k, v)
-    #d_state = intent_request['request']['dialogState']
-    #print('Dialog State: ' + d_state)
-    #print(intent_request['dialogState'])
+    if 'dialogState' in intent_request and intent_request['dialogState'] != 'COMPLETED':
+        print('Dialog state started')
+        return build_response(session_attributes, buildSpeechletResponseWithDirectiveNoIntent())
+    #else:
+     #   return get_welcome_response()
 
 
     # Dispatch to your skill's intent handlers
@@ -220,6 +243,10 @@ def lambda_handler(event, context):
     # if (event['session']['application']['applicationId'] !=
     #         "amzn1.echo-sdk-ams.app.[unique-value-here]"):
     #     raise ValueError("Invalid Application ID")
+    #if event['request']['dialogState'] == 'STARTED':
+    #    print('Dialog started')
+    #elif event['request']['dialogState'] == 'COMPLETED':
+    #    print('Dialog completed')
 
     if event['session']['new']:
         on_session_started({'requestId': event['request']['requestId']},
